@@ -6,7 +6,7 @@ static igraph_real_t skewness(igraph_t const *graph,
                               igraph_vector_t const *weights)
 {
   if (!weights) {
-    return false;
+    return 0;
   }
 
   igraph_integer_t n_edges = igraph_ecount(graph);
@@ -19,14 +19,14 @@ static igraph_real_t skewness(igraph_t const *graph,
 
   for (igraph_integer_t i = 0; i < n_edges; i++) {
     value = VECTOR(*weights)[i] - avg;
-    value_sq *= value;
+    value_sq = value * value;
     denominator += value_sq;
     numerator += value * value_sq;
   }
   denominator = sqrt((double)denominator);
   denominator = denominator * denominator * denominator;
 
-  skew = numerator / denominator;
+  skew = (numerator / n_edges) / denominator;
   skew /= sqrt((double)n_edges);
 
   return skew;
