@@ -167,56 +167,13 @@ se2_iterator *se2_iterator_random_label_init(se2_partition const *partition,
   return iterator;
 }
 
-static inline void k_smallest_swap_i(igraph_vector_int_t *idx,
-                                     igraph_integer_t const i,
-                                     igraph_integer_t j)
-{
-  igraph_integer_t swap = VECTOR(*idx)[i];
-  VECTOR(*idx)[i] = VECTOR(*idx)[j];
-  VECTOR(*idx)[j] = swap;
-}
-
-static void k_smallest_i(igraph_vector_t const *arr,
-                         igraph_integer_t const n,
-                         igraph_vector_int_t *idx,
-                         igraph_integer_t const k)
-{
-  igraph_integer_t pivot = 0;
-  igraph_integer_t max = VECTOR(*arr)[pivot];
-
-  for (igraph_integer_t i = 0; i < k; i++) {
-    if (VECTOR(*arr)[i] > max) {
-      max = VECTOR(*arr)[i];
-      pivot = i;
-    }
-  }
-  k_smallest_swap_i(idx, k - 1, pivot);
-  pivot = k - 1;
-
-  for (igraph_integer_t i = k; i < n; i++) {
-    if (VECTOR(*arr)[VECTOR(*idx)[pivot]] > VECTOR(*arr)[VECTOR(*idx)[i]]) {
-      k_smallest_swap_i(idx, i, pivot);
-      pivot = i;
-    }
-  }
-
-  if (pivot != (k - 1)) {
-    k_smallest_i(arr, pivot, idx, k);
-  }
-}
-
 se2_iterator *se2_iterator_k_worst_fit_nodes_init(
   se2_partition const *partition, igraph_integer_t const k)
 {
   igraph_vector_int_t *ids = malloc(sizeof(*ids));
-
   igraph_vector_int_init(ids, partition->n_nodes);
-  for (igraph_integer_t i = 0; i < partition->n_nodes; i++) {
-    VECTOR(*ids)[i] = i;
-  }
 
-  k_smallest_i(partition->label_quality, partition->n_nodes, ids, k);
-
+  igraph_vector_qsort_ind(partition->label_quality, ids, IGRAPH_ASCENDING);
   igraph_vector_int_resize(ids, k);
 
   se2_iterator *iterator = se2_iterator_from_vector(ids, k);
@@ -325,31 +282,19 @@ igraph_integer_t se2_partition_community_size(se2_partition const *partition,
   return VECTOR(*partition->community_sizes)[label];
 }
 
-static igraph_real_t se2_vector_median_i(igraph_vector_t const *vec,
-    igraph_integer_t const k, igraph_integer_t const len,
-    igraph_vector_int_t *ids)
-{
-  for (igraph_integer_t i = 0; i < len; i++) {
-    VECTOR(*ids)[i] = i;
-  }
-
-  k_smallest_i(vec, len, ids, k);
-  return VECTOR(*vec)[VECTOR(*ids)[k - 1]];
-}
-
-igraph_real_t se2_vector_median(igraph_vector_t const *vec,
-                                igraph_integer_t const len)
+igraph_real_t se2_vector_median(igraph_vector_t const *vec)
 {
   igraph_vector_int_t ids;
-  igraph_real_t res;
+  igraph_integer_t len = igraph_vector_size(vec) - 1;
   igraph_integer_t k = len / 2;
+  igraph_real_t res;
 
   igraph_vector_int_init(&ids, len);
-
-  res = se2_vector_median_i(vec, k, len, &ids);
+  igraph_vector_qsort_ind(vec, &ids, IGRAPH_ASCENDING);
+  res = VECTOR(*vec)[VECTOR(ids)[k]];
 
   if (len % 2) {
-    res += se2_vector_median_i(vec, k + 1, len, &ids);
+    res += VECTOR(*vec)[VECTOR(ids)[k + 1]];
     res /= 2;
   }
 
@@ -357,17 +302,25 @@ igraph_real_t se2_vector_median(igraph_vector_t const *vec,
 
   return res;
 }
-
-static igraph_integer_t se2_partition_median_community_size_i(
-  se2_partition const *partition, igraph_vector_t const *community_sizes,
-  igraph_vector_int_t *ids, igraph_integer_t const k)
+igraph_real_t se2_vector_int_median(igraph_vector_int_t const *vec)
 {
-  for (igraph_integer_t i = 0; i < partition->n_labels; i++) {
-    VECTOR(*ids)[i] = i;
+  igraph_vector_int_t ids;
+  igraph_integer_t len = igraph_vector_int_size(vec) - 1;
+  igraph_integer_t k = len / 2;
+  igraph_real_t res;
+
+  igraph_vector_int_init(&ids, len);
+  igraph_vector_int_qsort_ind(vec, &ids, IGRAPH_ASCENDING);
+  res = VECTOR(*vec)[VECTOR(ids)[k]];
+
+  if (len % 2) {
+    res += VECTOR(*vec)[VECTOR(ids)[k + 1]];
+    res /= 2;
   }
 
-  k_smallest_i(community_sizes, partition->n_labels, ids, k);
-  return (igraph_integer_t)VECTOR(*community_sizes)[VECTOR(*ids)[k - 1]];
+  igraph_vector_int_destroy(&ids);
+
+  return res;
 }
 
 igraph_integer_t se2_partition_median_community_size(se2_partition const
@@ -377,15 +330,11 @@ igraph_integer_t se2_partition_median_community_size(se2_partition const
     return partition->n_nodes;
   }
 
-  igraph_vector_int_t ids;
-  // Use floats instead of integer to reuse k_smallest_i function.
-  igraph_vector_t community_sizes;
-  igraph_integer_t k = partition->n_labels / 2;
+  igraph_vector_int_t community_sizes;
   se2_iterator *label_iter = se2_iterator_random_label_init(partition, 0);
   igraph_integer_t res = 0;
 
-  igraph_vector_init(&community_sizes, partition->n_labels);
-  igraph_vector_int_init(&ids, partition->max_label + 1);
+  igraph_vector_int_init(&community_sizes, partition->n_labels);
 
   igraph_integer_t label_id;
   igraph_integer_t label_i = 0;
@@ -394,18 +343,12 @@ igraph_integer_t se2_partition_median_community_size(se2_partition const
       (igraph_real_t)se2_partition_community_size(partition, label_id);
     label_i++;
   }
+  igraph_vector_int_resize(&community_sizes, label_i);
 
-  res = se2_partition_median_community_size_i(
-          partition, &community_sizes, &ids, k);
+  res = se2_vector_int_median(&community_sizes);
 
-  if ((partition->n_labels % 2) == 0) {
-    res += se2_partition_median_community_size_i(
-             partition, &community_sizes, &ids, k + 1);
-    res /= 2;
-  }
-
-  igraph_vector_destroy(&community_sizes);
-  igraph_vector_int_destroy(&ids);
+  se2_iterator_destroy(label_iter);
+  igraph_vector_int_destroy(&community_sizes);
 
   return res;
 }

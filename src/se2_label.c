@@ -309,7 +309,7 @@ igraph_real_t se2_modularity_median(se2_partition *partition,
     label_i++;
   }
 
-  res = se2_vector_median(&modularity_change_without_gaps, partition->n_labels);
+  res = se2_vector_median(&modularity_change_without_gaps);
 
   igraph_vector_destroy(&modularity_change_without_gaps);
   se2_iterator_destroy(label_iter);
