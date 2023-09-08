@@ -7,35 +7,31 @@ This creates a C library that can be used to run SE2 and will provide matlab bin
 At the moment, implementation performs a subset of the matlab version. Specifically, this cannot perform subclustering, provide confidence for node membership, or order the nodes for plotting.
 
 ## Installation
-To install run the `make` command:
+To install run the `make` command.
+
+### For the C library
 
 ```bash
-make lib        # Makes only the C library available
+make lib
 ```
 
-or
+Installation of the C library requires igraph being installed in a known location.
+
+### For Matlab toolbox
 
 ```bash
-make toolbox    # Makes Matlab toolbox
+make toolbox
 ```
+
+Note: The [matlab-igraph](https://github.com/DavidRConnell/matlab-igraph) toolbox is used in compiling the SE2 toolbox, this contains its own copy of igraph, so it does not need to installed separately. Consequently, *if the C library has been compiled already, it will be linked to the wrong copy of igraph so run `make clean-dist` before making the toolbox*.
+
+Note: Since matlab-igraph does compile igraph, it requires igraph's dependencies to be available. See the [igraph installation page](https://igraph.org/c/html/latest/igraph-Installation.html). In short you need at least a C compiler and CMake.
 
 The installation works only for linux OSes, as of now.
 I believe it should be easy to modify installation for other OSes but have yet to test it.
 
-Installation of the C library requires igraph being installed in a known location.
-For the matlab toolbox, matlab and the [matlab-igraph](https://github.com/DavidRConnell/matlab-igraph) toolbox are required. (Note the matlab-igraph toolbox includes its own copy of igraph, so igraph does not need to be installed seperately.)
-
 ## Use
-There are two ways to run SE2, in Matlab using the matlab bindings or directly in C.
-
-### Matlab TODO
-```matlab
-addpath("path/to/repo")
-adj = igraph.famous("Zachery");
-membership = speakeasy2(adj);
-```
-
-Additionally, several optional name-value pairs can be passed to modify how SE2 is run. See [options](#Options).
+There are two ways to run SE2, directly in C or in Matlab using the Matlab bindings.
 
 ### C
 ```C
@@ -66,7 +62,17 @@ int main()
 }
 ```
 
-Similar to Matlab, there are a number of options that can be added to the `opts` object to modify SE2. See [options](#Options).
+Additionally, there are a number of options that can be added to the `opts` object to modify SE2. See [options](#Options).
+
+### Matlab
+```matlab
+addpath("path/to/igraph-se2/toolbox")
+adj = igraph.famous("Zachery"); % Requires matlab-igraph toolbox
+membership = speakeasy2(adj);
+```
+
+Similarly to the C variant, several optional name-value pairs can be passed to modify how SE2 is run. See [options](#Options).
+
 
 ## Options
 

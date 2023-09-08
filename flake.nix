@@ -19,7 +19,25 @@
           matlab
           matlab-mlint
           matlab-mex
-        ]) ++ (with pkgs; [ astyle bear gdb gnumake igraph ]);
+        ]) ++ (with pkgs; [
+          astyle
+          bear
+          gdb
+          gnumake
+          igraph
+
+          # igraph dependencies
+          arpack
+          bison
+          blas
+          cmake
+          flex
+          glpk
+          gmp
+          lapack
+          libxml2
+          plfit
+        ]);
         shellHook = ''
           export OMP_NUM_THREADS=4
           export C_INCLUDE_PATH=${pkgs.igraph.dev}/include/igraph
