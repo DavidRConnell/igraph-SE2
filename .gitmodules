@@ -1,3 +1,3 @@
 [submodule "matlab-igraph"]
-	path = matlab-igraph
+	path = vendor/matlab-igraph
 	url = https://github.com/DavidRConnell/matlab-igraph.git
