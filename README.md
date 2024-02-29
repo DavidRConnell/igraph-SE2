@@ -62,7 +62,7 @@ Additionally, there are a number of options that can be added to the `opts` obje
 ### Matlab
 ```matlab
 addpath("path/to/igraph-se2/toolbox")
-adj = igraph.famous("Zachery"); % Requires matlab-igraph toolbox
+adj = igraph.famous("Zachary"); % Requires matlab-igraph toolbox
 membership = speakeasy2(adj);
 ```
 
@@ -84,10 +84,12 @@ Similarly to the C variant, several optional name-value pairs can be passed to m
 In Matlab options are supplied as name-value pairs:
 
 ```matlab
-speakeasy2(adj, 'random_seed', 1234, 'verbose', true, 'independent_runs', 5);
+speakeasy2(adj, 'seed', 1234, 'verbose', true, 'independentRuns', 5);
 ```
 
-For C, use change the values of the options structure:
+See `help speakeasy2` for more information.
+
+For C, set the values of the options structure:
 
 ```C
 	...

@@ -5,11 +5,17 @@ matlab_add_mex(NAME mexSE2
   R2018a
 )
 
-target_link_libraries(SpeakEasy2
-  PRIVATE ${Matlab_MEX_LIBRARY} ${Matlab_MX_LIBRARY}
-  PUBLIC mxIgraph
+target_include_directories(mexSE2
+  PRIVATE ${Matlab_INCLUDE_DIRS}
 )
 
-target_include_directories(mexSE2
+matlab_add_mex(NAME isdirected
+  MODULE
+  SRC isdirected.c
+  LINK_TO mxIgraph
+  R2018a
+)
+
+target_include_directories(isdirected
   PRIVATE ${Matlab_INCLUDE_DIRS}
 )

@@ -68,7 +68,7 @@ install(DIRECTORY toolbox
   DESTINATION igraph-SE2
   COMPONENT toolbox)
 
-install(TARGETS mexSE2
+install(TARGETS mexSE2 isdirected
   DESTINATION igraph-SE2/toolbox/private
   RUNTIME_DEPENDENCY_SET toolbox_deps
   COMPONENT toolbox)

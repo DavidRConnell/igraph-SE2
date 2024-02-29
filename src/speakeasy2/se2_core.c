@@ -9,10 +9,6 @@
 #include "se2_modes.h"
 #include "se2_reweight_graph.h"
 
-#ifdef SE2_PRINT_PATH
-#include "se2_print.h"
-#endif
-
 #define SE2_SET_OPTION(opts, field, default) \
     (opts->field) = (opts)->field ? (opts)->field : (default)
 
@@ -27,16 +23,6 @@ static void se2_core(igraph_t const *graph,
     igraph_vector_int_list_get_ptr(partition_list, partition_offset);
   se2_partition *working_partition = se2_partition_init(graph, ic_store);
 
-#ifdef SE2_PRINT_PATH
-  printf("Printing results to file\n\n");
-  igraph_real_t modularity;
-  igraph_bool_t directed = igraph_is_directed(graph);
-  igraph_real_t resolution = 1;
-  igraph_modularity(graph, working_partition->reference, weights, resolution,
-                    directed, &modularity);
-  se2_print_setup(graph, working_partition, &modularity);
-#endif
-
   igraph_integer_t partition_idx = partition_offset;
   for (igraph_integer_t time = 0; !se2_do_terminate(tracker); time++) {
     se2_mode_run_step(graph, weights, working_partition, tracker, time);
@@ -44,12 +30,6 @@ static void se2_core(igraph_t const *graph,
       se2_partition_store(working_partition, partition_list, partition_idx);
       partition_idx++;
     }
-#ifdef SE2_PRINT_PATH
-    igraph_modularity(graph, working_partition->reference, weights, resolution,
-                      directed, &modularity);
-    se2_print_step(working_partition, time + 1, se2_tracker_mode(tracker),
-                   &modularity);
-#endif
   }
 
   se2_tracker_destroy(tracker);
@@ -101,7 +81,6 @@ static void se2_most_representative_partition(igraph_vector_int_list_t const
       idx = i;
     }
   }
-
 
   igraph_matrix_destroy(&nmi_sum_accumulator);
   igraph_vector_destroy(&nmi_sums);
@@ -239,11 +218,6 @@ int speak_easy_2(igraph_t *graph, igraph_vector_t *weights,
   }
 
   se2_reweight(graph, weights);
-
-#ifdef SE2_PRINT_PATH
-  opts->independent_runs = 1;
-  opts->target_partitions = 1;
-#endif
 
   se2_bootstrap(graph, weights, 0, opts, res);
 
