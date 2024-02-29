@@ -9,4 +9,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Move from GNUMake to CMake.
 - Reorganize toolbox to remove C source code from distributed package.
