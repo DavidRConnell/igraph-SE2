@@ -1,34 +1,27 @@
 # SpeakEasy 2 community detection
 
 A port of the SpeakEasy 2 (SE2) community detection algorithm rewritten in C with the help of the [igraph C library](https://igraph.org/).
-The original Matlab code can be found at  [SE2](https://github.com/cogdishion/SE2).
-This creates a C library that can be used to run SE2 and will provide matlab bindings.
+The original MATLAB code can be found at  [SE2](https://github.com/cogdishion/SE2).
+
+Provides a C library and a MATLAB toolbox.
 
 At the moment, implementation performs a subset of the matlab version. Specifically, this cannot perform subclustering, provide confidence for node membership, or order the nodes for plotting.
 
 ## Installation
-To install run the `make` command.
+This package uses CMake and git submodules for handling some of the dependencies. External dependencies are `bison`, `flex`, and `libxml2`.
 
-### For the C library
-
-```bash
-make lib
-```
-
-Installation of the C library requires igraph being installed in a known location.
-
-### For Matlab toolbox
+To set download the git submodules use:
 
 ```bash
-make toolbox
+git submodule init && git submodule update --recursive
 ```
 
-Note: The [matlab-igraph](https://github.com/DavidRConnell/matlab-igraph) toolbox is used in compiling the SE2 toolbox, this contains its own copy of igraph, so it does not need to installed separately. Consequently, *if the C library has been compiled already, it will be linked to the wrong copy of igraph so run `make clean-dist` before making the toolbox*.
-
-Note: Since matlab-igraph does compile igraph, it requires igraph's dependencies to be available. See the [igraph installation page](https://igraph.org/c/html/latest/igraph-Installation.html). In short you need at least a C compiler and CMake.
-
-The installation works only for linux OSes, as of now.
-I believe it should be easy to modify installation for other OSes but have yet to test it.
+For CMake run:
+```bash
+cmake -B build .
+cmake --build build
+```
+This will build mex files to `./build/src/mex` to run the toolbox in the current directory, you can link all mex files to `toolbox/private`. This will allow the mex files to be rebuilt without needing to repeatedly copy them to the toolbox.
 
 ## Use
 There are two ways to run SE2, directly in C or in Matlab using the Matlab bindings.
@@ -61,6 +54,8 @@ int main()
   return EXIT_SUCCESS;
 }
 ```
+
+The source can be compiled by using CMake and linking to the `SpeakEasy2` target.
 
 Additionally, there are a number of options that can be added to the `opts` object to modify SE2. See [options](#Options).
 
