@@ -97,8 +97,15 @@ jobs:
   build-macos:
     name: Build macOS toolbox
     runs-on: macos-latest
+    # Use system Clang (supports openmp) instead of XCode Clang.
+    # See https://gist.github.com/svenevs/f00ed3898d2af6248921b63254aa8cc1
     env:
-      LLVM_VERSION: "14.0.5"
+      CC: /usr/bin/clang
+      CXX: /usr/bin/clang++
+      CPPFLAGS: "-Xpreprocessor -fopenmp"
+      CFLAGS: "-I/usr/local/opt/libomp/include"
+      CXXFLAGS: "-I/usr/local/opt/libomp/include"
+      LDFLAGS: "-Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
 
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +114,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install dependencies
-        run: brew install ninja autoconf automake libtool
+        run: brew install ninja autoconf automake libtool libomp
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v2
