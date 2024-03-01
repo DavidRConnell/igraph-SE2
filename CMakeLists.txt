@@ -79,7 +79,7 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     "C:\\msys64\\mingw64\\bin" "C:\\msys64\\ucrt64\\bin"
     "D:\\msys64\\mingw64\\bin" "D:\\msys64\\ucrt64\\bin"
     PRE_EXCLUDE_REGEXES "api-ms-*" "libmx" "libmex" "ext-ms-*"
-    DESTINATION matlab-igraph/toolbox/+igraph/private
+    DESTINATION igraph-SE2/toolbox/private
     COMPONENT toolbox)
 endif()
 
