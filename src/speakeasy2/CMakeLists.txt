@@ -11,5 +11,5 @@ target_link_libraries(SpeakEasy2
 )
 
 target_include_directories(SpeakEasy2
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+  PUBLIC ${PROJECT_SOURCE_DIR}/include
 )

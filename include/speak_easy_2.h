@@ -18,9 +18,9 @@ typedef struct {
   igraph_integer_t max_threads;       // Number of threads to use.
   bool node_confidence;
   bool verbose; // Print information to stdout
-} options;
+} se2_options;
 
-int speak_easy_2(igraph_t *graph, igraph_vector_t *weights,
-                 options *opts, igraph_vector_int_t *res);
+int speak_easy_2(igraph_t* graph, igraph_vector_t* weights,
+                 se2_options* opts, igraph_vector_int_t* res);
 
 #endif
