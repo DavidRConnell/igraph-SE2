@@ -36,7 +36,7 @@ int main()
   igraph_t graph;
   igraph_famous(&graph, "Zachary");
   igraph_vector_int_t membership;
-  options opts = {};
+  se2_options opts = {};
 
   igraph_vector_int_init(&membership, 0);
   speak_easy_2(&graph, NULL, &opts, &membership);
@@ -93,7 +93,7 @@ For C, set the values of the options structure:
 
 ```C
 	...
-	options opts = {
+	se2_options opts = {
 		random_seed = 1234,
 		verbose = true,
 		independent_runs = 5

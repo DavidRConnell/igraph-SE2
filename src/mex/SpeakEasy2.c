@@ -15,7 +15,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, mxArray const* prhs[])
 
   igraph_bool_t isdirected = mxIgraphGetBool(method_options, "isdirected") ?
                              IGRAPH_DIRECTED : IGRAPH_UNDIRECTED;
-  options opts = {
+  se2_options opts = {
     .discard_transient = mxIgraphGetInteger(method_options, "discardTransient"),
     .independent_runs = mxIgraphGetInteger(method_options, "independentRuns"),
     .max_threads = mxIgraphGetInteger(method_options, "maxThreads"),

@@ -12,16 +12,16 @@
 #define SE2_SET_OPTION(opts, field, default) \
     (opts->field) = (opts)->field ? (opts)->field : (default)
 
-static void se2_core(igraph_t const *graph,
-                     igraph_vector_t const *weights,
-                     igraph_vector_int_list_t *partition_list,
+static void se2_core(igraph_t const* graph,
+                     igraph_vector_t const* weights,
+                     igraph_vector_int_list_t* partition_list,
                      igraph_integer_t const partition_offset,
-                     options const *opts)
+                     se2_options const* opts)
 {
-  se2_tracker *tracker = se2_tracker_init(opts);
-  igraph_vector_int_t *ic_store =
+  se2_tracker* tracker = se2_tracker_init(opts);
+  igraph_vector_int_t* ic_store =
     igraph_vector_int_list_get_ptr(partition_list, partition_offset);
-  se2_partition *working_partition = se2_partition_init(graph, ic_store);
+  se2_partition* working_partition = se2_partition_init(graph, ic_store);
 
   igraph_integer_t partition_idx = partition_offset;
   for (igraph_integer_t time = 0; !se2_do_terminate(tracker); time++) {
@@ -39,10 +39,10 @@ static void se2_core(igraph_t const *graph,
 
 static void se2_most_representative_partition(igraph_vector_int_list_t const
     *partition_store, igraph_integer_t const n_partitions,
-    igraph_vector_int_t *most_representative_partition,
-    options const *opts)
+    igraph_vector_int_t* most_representative_partition,
+    se2_options const* opts)
 {
-  igraph_vector_int_t *selected_partition;
+  igraph_vector_int_t* selected_partition;
   igraph_matrix_t nmi_sum_accumulator;
   igraph_vector_t nmi_sums;
   igraph_integer_t idx = 0;
@@ -89,11 +89,11 @@ static void se2_most_representative_partition(igraph_vector_int_list_t const
   igraph_vector_int_update(most_representative_partition, selected_partition);
 }
 
-static void se2_bootstrap(igraph_t *graph,
-                          igraph_vector_t const *weights,
+static void se2_bootstrap(igraph_t* graph,
+                          igraph_vector_t const* weights,
                           igraph_integer_t const subcluster_iter,
-                          options const *opts,
-                          igraph_vector_int_t *res)
+                          se2_options const* opts,
+                          igraph_vector_int_t* res)
 {
   igraph_integer_t n_nodes = igraph_vcount(graph);
   igraph_vector_t kin;
@@ -153,7 +153,7 @@ static void se2_bootstrap(igraph_t *graph,
   igraph_vector_destroy(&kin);
 }
 
-static igraph_integer_t default_target_clusters(igraph_t const *graph)
+static igraph_integer_t default_target_clusters(igraph_t const* graph)
 {
   igraph_integer_t n_nodes = igraph_vcount(graph);
 
@@ -180,7 +180,7 @@ static igraph_integer_t default_max_threads()
   return n_threads;
 }
 
-static void se2_set_defaults(igraph_t const *graph, options *opts)
+static void se2_set_defaults(igraph_t const* graph, se2_options* opts)
 {
   SE2_SET_OPTION(opts, independent_runs, 10);
   SE2_SET_OPTION(opts, subcluster, 1);
@@ -197,8 +197,8 @@ static void se2_set_defaults(igraph_t const *graph, options *opts)
   omp_set_num_threads(opts->max_threads);
 }
 
-int speak_easy_2(igraph_t *graph, igraph_vector_t *weights,
-                 options *opts, igraph_vector_int_t *res)
+int speak_easy_2(igraph_t* graph, igraph_vector_t* weights,
+                 se2_options* opts, igraph_vector_int_t* res)
 {
   se2_set_defaults(graph, opts);
 

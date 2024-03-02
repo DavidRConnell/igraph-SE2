@@ -19,7 +19,7 @@ typedef enum {
 
 struct se2_tracker {
   se2_mode mode;
-  igraph_integer_t *time_since_last;
+  igraph_integer_t* time_since_last;
   igraph_bool_t allowed_to_merge;
   igraph_real_t max_prev_merge_threshold;
   igraph_bool_t is_partition_stable;
@@ -33,12 +33,12 @@ struct se2_tracker {
   igraph_bool_t intervention_event;
 };
 
-se2_tracker *se2_tracker_init(options const *opts)
+se2_tracker* se2_tracker_init(se2_options const* opts)
 {
-  se2_tracker *tracker = malloc(sizeof(*tracker));
+  se2_tracker* tracker = malloc(sizeof(*tracker));
 
-  igraph_integer_t *time_since_mode_tracker = calloc(SE2_NUM_MODES,
-      sizeof(*time_since_mode_tracker));
+  igraph_integer_t* time_since_mode_tracker = calloc(SE2_NUM_MODES,
+    sizeof(*time_since_mode_tracker));
 
   se2_tracker new_tracker = {
     .mode = SE2_TYPICAL,
@@ -61,29 +61,29 @@ se2_tracker *se2_tracker_init(options const *opts)
   return tracker;
 }
 
-void se2_tracker_destroy(se2_tracker *tracker)
+void se2_tracker_destroy(se2_tracker* tracker)
 {
   free(tracker->time_since_last);
   free(tracker);
 }
 
-igraph_integer_t se2_tracker_mode(se2_tracker const *tracker)
+igraph_integer_t se2_tracker_mode(se2_tracker const* tracker)
 {
   return tracker->mode;
 }
 
-igraph_bool_t se2_do_terminate(se2_tracker *tracker)
+igraph_bool_t se2_do_terminate(se2_tracker* tracker)
 {
   // Should never be greater than n_partitions.
   return tracker->post_intervention_count >= tracker->n_partitions;
 }
 
-igraph_bool_t se2_do_save_partition(se2_tracker *tracker)
+igraph_bool_t se2_do_save_partition(se2_tracker* tracker)
 {
   return tracker->intervention_event;
 }
 
-static void se2_select_mode(igraph_integer_t const time, se2_tracker *tracker)
+static void se2_select_mode(igraph_integer_t const time, se2_tracker* tracker)
 {
   tracker->mode = SE2_TYPICAL; // Default
 
@@ -112,7 +112,7 @@ static void se2_select_mode(igraph_integer_t const time, se2_tracker *tracker)
   }
 }
 
-static void se2_post_step_hook(se2_tracker *tracker)
+static void se2_post_step_hook(se2_tracker* tracker)
 {
   tracker->intervention_event = false;
   tracker->time_since_last[tracker->mode] = 0;
@@ -163,27 +163,27 @@ static void se2_post_step_hook(se2_tracker *tracker)
   }
 }
 
-static void se2_typical_mode(igraph_t const *graph,
-                             igraph_vector_t const *weights,
-                             se2_partition *partition)
+static void se2_typical_mode(igraph_t const* graph,
+                             igraph_vector_t const* weights,
+                             se2_partition* partition)
 {
   se2_find_most_specific_labels(graph, weights, partition,
                                 TYPICAL_FRACTION_NODES_TO_UPDATE);
 }
 
-static void se2_bubble_mode(igraph_t const *graph,
-                            se2_partition *partition,
-                            se2_tracker *tracker)
+static void se2_bubble_mode(igraph_t const* graph,
+                            se2_partition* partition,
+                            se2_tracker* tracker)
 {
   se2_burst_large_communities(graph, partition, FRACTION_NODES_TO_BUBBLE,
                               tracker->smallest_community_to_bubble);
   tracker->labels_after_last_bubbling = partition->n_labels;
 }
 
-static void se2_merge_mode(igraph_t const *graph,
-                           igraph_vector_t const *weights,
-                           se2_partition *partition,
-                           se2_tracker *tracker)
+static void se2_merge_mode(igraph_t const* graph,
+                           igraph_vector_t const* weights,
+                           se2_partition* partition,
+                           se2_tracker* tracker)
 {
   tracker->is_partition_stable = se2_merge_well_connected_communities(graph,
                                  weights,
@@ -191,17 +191,17 @@ static void se2_merge_mode(igraph_t const *graph,
                                  &(tracker->max_prev_merge_threshold));
 }
 
-static void se2_nurture_mode(igraph_t const *graph,
-                             igraph_vector_t const *weights,
-                             se2_partition *partition)
+static void se2_nurture_mode(igraph_t const* graph,
+                             igraph_vector_t const* weights,
+                             se2_partition* partition)
 {
   se2_relabel_worst_nodes(graph, weights, partition,
                           NURTURE_FRACTION_NODES_TO_UPDATE);
 }
 
-void se2_mode_run_step(igraph_t const *graph,
-                       igraph_vector_t const *weights,
-                       se2_partition *partition, se2_tracker *tracker,
+void se2_mode_run_step(igraph_t const* graph,
+                       igraph_vector_t const* weights,
+                       se2_partition* partition, se2_tracker* tracker,
                        igraph_integer_t const time)
 {
   se2_select_mode(time, tracker);
