@@ -34,24 +34,58 @@ static PyObject* cluster(PyObject* Py_UNUSED(dummy), PyObject* args,
   PyObject* py_weights_obj = NULL;
   igraph_t* graph;
   igraph_vector_t weights;
-  char* kwlist[] = {"graph", "weights", "independent_runs", NULL};
-  int independent_runs = 10;
+  char* kwlist[] = {
+    "graph",
+    "weights",
+    "discard_transient",
+    "independent_runs",
+    "max_threads",
+    "seed",
+    "target_clusters",
+    "target_partitions",
+    "verbose",
+    NULL
+  };
+  int discard_transient = 0;
+  int independent_runs = 0;
+  int max_threads = 0;
+  int seed = 0;
+  int target_clusters = 0;
+  int target_partitions = 0;
+  int verbose = false;
   igraph_vector_int_t memb;
   PyObject* py_memb_obj;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Od", kwlist,
+  if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|Obbbbbbp", kwlist,
                                    &py_graph_obj,
                                    &py_weights_obj,
-                                   &independent_runs)) {
+                                   &discard_transient,
+                                   &independent_runs,
+                                   &max_threads,
+                                   &seed,
+                                   &target_clusters,
+                                   &target_partitions,
+                                   &verbose)) {
     return NULL;
   }
 
   se2_options opts = {
+    .discard_transient = discard_transient,
     .independent_runs = independent_runs,
-    .verbose = true,
+    .max_threads = max_threads,
+    .random_seed = seed,
+    .target_clusters = target_clusters,
+    .target_partitions = target_partitions,
+    .verbose = verbose,
   };
 
   graph = PyIGraph_ToCGraph(py_graph_obj);
+
+  if (target_clusters > igraph_vcount(graph)) {
+    PyErr_SetString(PyExc_ValueError,
+                    "Number of target clusters cannot exceed the number of "
+                    "nodes in the graph.");
+  }
 
   if (py_weights_obj && PySequence_Check(py_weights_obj)) {
     py_sequence_to_igraph_vector_i(py_weights_obj, &weights);
@@ -62,8 +96,13 @@ static PyObject* cluster(PyObject* Py_UNUSED(dummy), PyObject* args,
     }
     speak_easy_2(graph, &weights, &opts, &memb);
   } else {
-    speak_easy_2(graph, NULL, &opts, &memb);
+    igraph_vector_init(&weights, igraph_ecount(graph));
+    for (igraph_integer_t i = 0; i < igraph_ecount(graph); i++) {
+      VECTOR(weights)[i] = 1;
+    }
+    speak_easy_2(graph, &weights, &opts, &memb);
   }
+  igraph_vector_destroy(&weights);
 
   py_memb_obj = igraph_vector_int_to_py_list_i(&memb);
   igraph_vector_int_destroy(&memb);
