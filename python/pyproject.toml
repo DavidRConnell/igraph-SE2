@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "speakeasy2"
+version = "0.1.0"
+description = "SpeakEasy2 community detection algorithm"
+authors = ["David R Connell <davidconnell12@gmail.com>"]
+license = "GPLv3+"
+repository = "https://github.com/davidrconnell/se2"
+keywords = ["network", "community detection", "cluster", "graph"]
+readme = "README.md"
+packages = [{ include = "python/speakeasy2" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+igraph = "^0.11.4"
+
+[tool.poetry.group.dev.dependencies]
+ipdb = "^0.13.13"
+ipython = "^8.22.1"
+isort = "^5.13.2"
+black = "^24.2.0"
+python-lsp-server = "^1.10.0"
+pylsp-mypy = "^0.6.8"
+python-lsp-ruff = "^2.1.0"
+build = "^1.1.1"
+
+[tool.black]
+line-length = 79
+preview = true
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pylsp-mypy]
+enabled = true
+live_mode = false
+dmypy = true
+
+[tool.ruff]
+line-length = 79
+ignore = ["E203", "E731"]
+select = ["A", "C", "D", "E", "F", "N", "RET", "SIM"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
