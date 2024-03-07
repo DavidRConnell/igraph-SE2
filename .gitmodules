@@ -6,4 +6,4 @@
 	url = https://github.com/igraph/igraph
 [submodule "vendor/python-igraph"]
 	path = vendor/python-igraph
-	url = https://github.com/davidrconnell/python-igraph
+	url = https://github.com/igraph/python-igraph
