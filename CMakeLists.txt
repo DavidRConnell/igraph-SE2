@@ -27,14 +27,29 @@ set(IGRAPH_USE_INTERNAL_GLPK ON)
 set(IGRAPH_USE_INTERNAL_plfit ON)
 add_subdirectory(vendor/igraph)
 
-include(vendor/igraph/etc/cmake/GetGitRevisionDescription.cmake)
 if ("${CMAKE_PACKAGE_VERSION}" STREQUAL "")
-    git_describe(CMAKE_PACKAGE_VERSION)
+  if (NOT GIT_FOUND)
+    find_package(Git QUIET)
+  endif()
+
+  execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    OUTPUT_VARIABLE CMAKE_PACKAGE_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 endif()
 
 if ("${CMAKE_PACKAGE_VERSION}" STREQUAL "")
   set(CMAKE_PACKAGE_VERSION "NOTFOUND")
 endif()
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/se2_version.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/include/se2_version.h
+)
+
+message(STATUS "${CMAKE_PROJECT_NAME} version: ${CMAKE_PACKAGE_VERSION}")
+add_subdirectory(src/speakeasy2)
 
 # Get name Matlab uses for the different architectures/systems.
 if ("${Matlab_MEX_EXTENSION}" STREQUAL "mexa64")
@@ -53,13 +68,11 @@ else ()
   set(Matlab_ARCH "NOTFOUND")
 endif()
 
-message(STATUS "${CMAKE_PROJECT_NAME} version: ${CMAKE_PACKAGE_VERSION}")
 message(STATUS "MEX extension: ${Matlab_MEX_EXTENSION}")
 message(STATUS "Matlab arch: ${Matlab_ARCH}")
 message(STATUS "")
 
 add_subdirectory(vendor/matlab-igraph/mxIgraph)
-add_subdirectory(src/speakeasy2)
 add_subdirectory(src/mex)
 
 # Installation

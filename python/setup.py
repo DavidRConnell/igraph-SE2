@@ -14,6 +14,7 @@ setup(
             ],
             include_dirs=[
                 "include",
+                "build/include",
                 "src/speakeasy2",
                 "vendor/igraph/include",
                 "build/vendor/igraph/include",

@@ -3,6 +3,7 @@
 
 #include <Python.h>
 #include <speak_easy_2.h>
+#include <se2_version.h>
 #include <igraph.h>
 #include <igraphmodule_api.h>
 
@@ -92,6 +93,8 @@ PyMODINIT_FUNC PyInit__speakeasy2(void)
   if (import_igraph() < 0) {
     return NULL;
   }
+
+  PyModule_AddStringMacro(m, SE2_VERSION);
 
   return m;
 }

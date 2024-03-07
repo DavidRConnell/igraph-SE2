@@ -1,10 +1,13 @@
-__all__ = ["cluster"]
+__all__ = ["cluster", "__version__"]
 
-import igraph as ig
+import igraph as _ig
 
+from speakeasy2._speakeasy2 import SE2_VERSION
 from speakeasy2._speakeasy2 import cluster as _cluster
 
+__version__ = SE2_VERSION
 
-def cluster(g: ig.Graph, **kwds) -> ig.VertexClustering:
+
+def cluster(g: _ig.Graph, **kwds) -> _ig.VertexClustering:
     memb = _cluster(g, **kwds)
-    return ig.VertexClustering(g, membership=memb)
+    return _ig.VertexClustering(g, membership=memb)
