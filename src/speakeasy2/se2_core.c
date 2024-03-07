@@ -86,7 +86,12 @@ static void se2_most_representative_partition(igraph_vector_int_list_t const
   igraph_vector_destroy(&nmi_sums);
 
   selected_partition = igraph_vector_int_list_get_ptr(partition_store, idx);
-  igraph_vector_int_update(most_representative_partition, selected_partition);
+
+  igraph_integer_t n_nodes = igraph_vector_int_size(selected_partition);
+  igraph_vector_int_init(most_representative_partition, n_nodes);
+  for (igraph_integer_t i = 0; i < n_nodes; i++) {
+    VECTOR(*most_representative_partition)[i] = VECTOR(*selected_partition)[i];
+  }
 }
 
 static void se2_bootstrap(igraph_t* graph,
