@@ -11,13 +11,23 @@ permissions:
   pull-requests: write
 
 jobs:
-  build_matlab:
+  build:
+    uses: ./.github/workflows/build.yaml
+
+  package_matlab:
+    needs:
+      - build
     uses: ./.github/workflows/matlab.yaml
+
+  package_python:
+    needs:
+      - build
+    uses: ./.github/workflows/python.yaml
 
   release:
     name: Release new packages
     runs-on: ubuntu-latest
-    needs: [build_matlab]
+    needs: [package_matlab, package_python]
 
     steps:
       - name: Collect packages
@@ -29,6 +39,7 @@ jobs:
         run: |
           mkdir release
           mv artifacts/igraph-SE2-toolbox-${{ github.sha }}/* release
+          mv artifacts/igraph-SE2-python-*-${{ github.sha }}/* release
 
       - name: Upload assets to release
         uses: softprops/action-gh-release@v1

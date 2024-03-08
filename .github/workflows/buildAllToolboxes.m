@@ -1,11 +1,11 @@
 function buildAllToolboxes(artifactsDir, outDir, version)
-    tmpDir = "tmp/igraph-SE2";
+    tmpDir = "tmp/speakeasy2";
     compiledFileDirs = {"private"};
-    for d = dir(artifactsDir + "/igraph-SE2-toolbox*")'
+    for d = dir(artifactsDir + "/speakeasy_2*")'
         toolboxDir = fullfile(artifactsDir, d(1).name, ...
-                              "igraph-SE2", "toolbox");
+                              "speakeasy2", "toolbox");
         zipFile = dir(fullfile(artifactsDir, d(1).name, ...
-                               "igraph-SE2_" + version + "*"));
+                               "SpeakEasy2" + version + "*"));
         arch = regexp(zipFile.name, version + '_(.*)-toolbox', "tokens");
 
         if ~exist(tmpDir, 'dir')

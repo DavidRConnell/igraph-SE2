@@ -1,0 +1,54 @@
+name: Package python packages
+
+on:
+  - workflow_call
+
+permissions:
+  checks: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-packages:
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        os: [Ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Collect OS specific build directory
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          name: igraph-SE2-${{ runner.os }}-${{  github.sha }}
+
+      - name: Extract files
+        run: |
+          mv artifacts/ build/
+          cp build/python/_speakeasy2.so python/speakeasy2
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Build package
+        run: |
+          cd python
+          poetry build
+          cd ..
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+            name: igraph-SE2-python-${{ runner.os }}-${{ matrix.python-version }}-${{ github.sha }}
+            path: python/dist/*

@@ -98,13 +98,6 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     COMPONENT toolbox)
 endif()
 
-## Python Package
-if(Python3_FOUND AND (Python3_VERSION_MINOR GREATER_EQUAL 10))
-  install(DIRECTORY python/speakeasy2
-    DESTINATION python/speakeasy2
-    COMPONENT python)
-endif()
-
 # Packaging
 set(CPACK_PACKAGE_HOMEPAGE_URL("https://github.com/DavidRConnell/igraph-SE2"))
 
