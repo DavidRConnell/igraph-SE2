@@ -1,18 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 
 project(
-  igraph-SE2
+  SpeakEasy2
   DESCRIPTION "igraph implementation of SpeakEasy2 community detection."
   LANGUAGES C CXX
 )
-
-find_package(Matlab COMPONENTS MAIN_PROGRAM MAT_LIBRARY MX_LIBRARY MEX_COMPILER REQUIRED)
-
-message(STATUS "Matlab: ${Matlab_VERSION_STRING}")
-
-if(Matlab_VERSION_STRING VERSION_LESS 9.14)
-  message(WARNING "Matlab >= 9.14 (R2023a) is required for MEX tests to work due to new buildtool argument syntax.")
-endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -51,6 +43,13 @@ configure_file(
 message(STATUS "${CMAKE_PROJECT_NAME} version: ${CMAKE_PACKAGE_VERSION}")
 add_subdirectory(src/speakeasy2)
 
+find_package(Matlab COMPONENTS MAIN_PROGRAM MAT_LIBRARY MX_LIBRARY MEX_COMPILER REQUIRED)
+message(STATUS "Matlab: ${Matlab_VERSION_STRING}")
+
+if(Matlab_VERSION_STRING VERSION_LESS 9.14)
+  message(WARNING "Matlab >= 9.14 (R2023a) is required for MEX tests to work due to new buildtool argument syntax.")
+endif()
+
 # Get name Matlab uses for the different architectures/systems.
 if ("${Matlab_MEX_EXTENSION}" STREQUAL "mexa64")
   set(Matlab_ARCH "glnxa64")
@@ -81,11 +80,11 @@ add_subdirectory(python)
 # Installation
 ## MATLAB Toolbox
 install(DIRECTORY toolbox
-  DESTINATION igraph-SE2
+  DESTINATION speakeasy2
   COMPONENT toolbox)
 
 install(TARGETS mexSE2 isdirected
-  DESTINATION igraph-SE2/toolbox/private
+  DESTINATION speakeasy2/toolbox/private
   RUNTIME_DEPENDENCY_SET toolbox_deps
   COMPONENT toolbox)
 
@@ -95,7 +94,7 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     "C:\\msys64\\mingw64\\bin" "C:\\msys64\\ucrt64\\bin"
     "D:\\msys64\\mingw64\\bin" "D:\\msys64\\ucrt64\\bin"
     PRE_EXCLUDE_REGEXES "api-ms-*" "libmx" "libmex" "ext-ms-*"
-    DESTINATION igraph-SE2/toolbox/private
+    DESTINATION speakeasy2/toolbox/private
     COMPONENT toolbox)
 endif()
 

@@ -2,7 +2,7 @@ function buildtoolbox(toolboxFolder, outDir, version)
     versionNumber = regexp(version, "v(\d+\.\d+\.\d+)", "tokens");
     versionNumber = versionNumber{1};
 
-    releaseName = strjoin(['igraph-SE2', version], '_');
+    releaseName = strjoin(['speakeasy2', version], '_');
 
     uuid = "d6b3abc6-7541-4fb2-b636-fc353c928a87";
     opts = matlab.addons.toolbox.ToolboxOptions(toolboxFolder, uuid);
