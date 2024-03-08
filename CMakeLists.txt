@@ -75,6 +75,9 @@ message(STATUS "")
 add_subdirectory(vendor/matlab-igraph/mxIgraph)
 add_subdirectory(src/mex)
 
+find_package(Python3 COMPONENTS Interpreter Development)
+add_subdirectory(python)
+
 # Installation
 ## MATLAB Toolbox
 install(DIRECTORY toolbox
@@ -94,6 +97,13 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
     PRE_EXCLUDE_REGEXES "api-ms-*" "libmx" "libmex" "ext-ms-*"
     DESTINATION igraph-SE2/toolbox/private
     COMPONENT toolbox)
+endif()
+
+## Python Package
+if(Python3_FOUND AND (Python3_VERSION_MINOR GREATER_EQUAL 10))
+  install(DIRECTORY python/speakeasy2
+    DESTINATION python/speakeasy2
+    COMPONENT python)
 endif()
 
 # Packaging
