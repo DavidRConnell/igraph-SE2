@@ -16,5 +16,7 @@ target_link_libraries(_speakeasy2
 )
 
 target_include_directories(_speakeasy2
-  PRIVATE ${PROJECT_SOURCE_DIR}/vendor/python-igraph/src/_igraph
+  PRIVATE
+  ${PROJECT_SOURCE_DIR}/vendor/python-igraph/src/_igraph
+  ${PROJECT_BINARY_DIR}/include
 )
