@@ -34,7 +34,7 @@ __version__ = SE2_VERSION
 
 def cluster(
     g: _ig.Graph,
-    weights: Optional[list[int]] = None,
+    weights: Optional[str | list[int]] = "weight",
     discard_transient: int = 3,
     independent_runs: int = 10,
     max_threads: int = 0,
@@ -54,9 +54,10 @@ def cluster(
     ----------
     g : igraph.Graph
         The graph to cluster.
-    weights : list[float], None
-        Optional list of weights. Must have length equal to the number of edges
-        in the graph.
+    weights : str, list[float], None
+        Optional name of weight attribute or list of weights. If a string, use
+        the graph edge attribute with the given name (default is "weight"). If
+        a list, must have length equal to the number of edges in the graph.
     discard_transient : int
         The number of partitions to discard before tracking. Default 3.
     independent_runs : int
@@ -82,6 +83,14 @@ def cluster(
         The detected community structure.
 
     """
+    if isinstance(weights, str):
+        if weights in g.edge_attributes():
+            weights = g.es[weights]
+        elif weights == "weight":
+            weights = None
+        else:
+            raise KeyError(f"Graph does not have edge attribute {weights}")
+
     memb = _cluster(
         g,
         weights,
