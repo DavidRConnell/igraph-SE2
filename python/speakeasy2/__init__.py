@@ -22,6 +22,8 @@ Example:
 
 __all__ = ["cluster", "__version__"]
 
+from typing import Optional
+
 import igraph as _ig
 
 from speakeasy2._speakeasy2 import SE2_VERSION
@@ -30,8 +32,23 @@ from speakeasy2._speakeasy2 import cluster as _cluster
 __version__ = SE2_VERSION
 
 
-def cluster(g: _ig.Graph, **kwds) -> _ig.VertexClustering:
+def cluster(
+    g: _ig.Graph,
+    weights: Optional[list[int]] = None,
+    discard_transient: int = 3,
+    independent_runs: int = 10,
+    max_threads: int = 0,
+    seed: int = 0,
+    target_clusters: int = 0,
+    target_partitions: int = 5,
+    verbose: bool = False,
+) -> _ig.VertexClustering:
     """Cluster a graph using the SpeakEasy2 community detection algorithm.
+
+    For all integer parameters below, values should be positive, setting a
+    value to 0 gives the underlying C implementation responsibility for setting
+    the default (for example choose of threads, random seed, and number of
+    target clusters is left for the C implementation to decide on).
 
     Parameters
     ----------
@@ -65,5 +82,15 @@ def cluster(g: _ig.Graph, **kwds) -> _ig.VertexClustering:
         The detected community structure.
 
     """
-    memb = _cluster(g, **kwds)
+    memb = _cluster(
+        g,
+        weights,
+        discard_transient,
+        independent_runs,
+        max_threads,
+        seed,
+        target_clusters,
+        target_partitions,
+        verbose,
+    )
     return _ig.VertexClustering(g, membership=memb)
