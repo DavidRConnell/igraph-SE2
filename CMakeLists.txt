@@ -72,14 +72,14 @@ message(STATUS "Matlab arch: ${Matlab_ARCH}")
 message(STATUS "")
 
 add_subdirectory(vendor/matlab-igraph/mxIgraph)
-add_subdirectory(src/mex)
+add_subdirectory(matlab/mex)
 
 find_package(Python3 COMPONENTS Interpreter Development)
 add_subdirectory(python)
 
 # Installation
 ## MATLAB Toolbox
-install(DIRECTORY toolbox
+install(DIRECTORY matlab/toolbox
   DESTINATION speakeasy2
   COMPONENT toolbox)
 

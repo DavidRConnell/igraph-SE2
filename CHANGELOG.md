@@ -19,3 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Move argument parsing to MATLAB.
 - Move from GNUMake to CMake.
 - Reorganize toolbox to remove C source code from distributed package.
+- Move all MATLAB source files under matlab directory.
