@@ -95,14 +95,10 @@ static PyObject* cluster(PyObject* Py_UNUSED(dummy), PyObject* args,
       return NULL;
     }
     speak_easy_2(graph, &weights, &opts, &memb);
+    igraph_vector_destroy(&weights);
   } else {
-    igraph_vector_init(&weights, igraph_ecount(graph));
-    for (igraph_integer_t i = 0; i < igraph_ecount(graph); i++) {
-      VECTOR(weights)[i] = 1;
-    }
-    speak_easy_2(graph, &weights, &opts, &memb);
+    speak_easy_2(graph, NULL, &opts, &memb);
   }
-  igraph_vector_destroy(&weights);
 
   py_memb_obj = igraph_vector_int_to_py_list_i(&memb);
   igraph_vector_int_destroy(&memb);
