@@ -8,4 +8,8 @@ The MATLAB toolbox and python packages are now available. The toolbox is on the 
 pip install --user speakeasy2
 ```
 
-R packages are coming soon.
+The R package can be installed within R from CRAN with:
+
+``` R
+install.packages("speakeasyR")
+```
